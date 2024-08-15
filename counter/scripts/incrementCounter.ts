@@ -32,6 +32,10 @@ export async function run(provider: NetworkProvider, args: string[]) {
         attempt++;
     }
 
+    const id = await counter.getID();
+
     ui.clearActionPrompt();
     ui.write('Counter increased successfully!');
+    ui.write(`Counter value: ${counterAfter}`);
+    ui.write(`Counter increased by: ${id}`);
 }
