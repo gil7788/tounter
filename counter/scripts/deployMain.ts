@@ -1,26 +1,24 @@
-import { toNano, Address } from '@ton/core';
-import { MainContract } from '../wrappers/MainContract';
-import { compile, NetworkProvider } from '@ton/blueprint';
+import { address, toNano } from "@ton/core";
+import { MainContract } from "../wrappers/MainContract";
+import { compile, NetworkProvider } from "@ton/blueprint";
 
 export async function run(provider: NetworkProvider) {
-    let address = provider.sender().address;
-    if (!address) {
-        throw new Error('No address found');
+    const deployerAddress = provider.sender().address;
+    if (!deployerAddress) {
+        throw new Error("Deployer address not found");
     }
-    const counter = provider.open(
-        MainContract.createFromConfig(
-            {
-                number: 0,
-                address: address,
-            },
-            await compile('MainContract')
-        )
+    const myContract = MainContract.createFromConfig(
+        {
+            number: 0,
+            address: deployerAddress,
+            owner_address: deployerAddress,
+        },
+        await compile("MainContract")
     );
 
-    await counter.sendDeploy(provider.sender(), toNano('0.05'));
+    const openedContract = provider.open(myContract);
 
-    const ATTEMPTS = 3;
-    await provider.waitForDeploy(counter.address, ATTEMPTS);
+    openedContract.sendDeploy(provider.sender(), toNano("0.1"));
 
-    console.log('Counter value', await counter.getData());
+    await provider.waitForDeploy(myContract.address);
 }

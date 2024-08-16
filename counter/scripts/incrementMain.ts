@@ -1,3 +1,6 @@
+// TODO need to correct - probably init from address by reading address state from the blockchain
+// Instead of create from config
+
 import { Address, toNano, Cell } from '@ton/core';
 import { MainContract } from '../wrappers/MainContract';
 import { NetworkProvider, sleep } from '@ton/blueprint';
@@ -13,7 +16,15 @@ export async function run(provider: NetworkProvider, args: string[]) {
         ui.write(`Error: Contract at address ${address} is not deployed!`);
         return;
     }
-    const mainContract = provider.open(MainContract.createFromAddress(address));
+    // const mainContract = provider.open(MainContract.createFromAddress(address));
+    const mainContract = provider.open(MainContract.createFromConfig(
+        {
+            number: 0,
+            address: address,
+            owner_address: address,
+        },
+        await loadContractCode()
+    ));
 
     // Get the current contract data (including the number)
     const dataBefore = await mainContract.getData();
@@ -22,7 +33,7 @@ export async function run(provider: NetworkProvider, args: string[]) {
     const incrementValue = 1; // You can adjust this as needed
 
     // Send the increment transaction
-    await mainContract.sendIncrement(provider.sender(), toNano('0.05'), incrementValue);
+    await mainContract.sendIncrement(provider.sender(), toNano('0.15'), incrementValue);
 
     ui.write('Waiting for the number to increase...');
 
