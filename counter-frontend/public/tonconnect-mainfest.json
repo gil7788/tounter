@@ -1,0 +1,12 @@
+{
+    "name": "TON Counter Example",
+    "description": "A simple counter dApp on TON Testnet.",
+    "url": "http://localhost:5173",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
